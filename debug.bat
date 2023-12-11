@@ -1,1 +1,1 @@
-flask --app api_test run --port=8080 --debug
+flask --app flaskr run --port=8080 --debug

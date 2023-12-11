@@ -1,4 +1,4 @@
-from api_test import create_app
+from flaskr import create_app
 
 
 def test_config():

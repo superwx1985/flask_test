@@ -4,6 +4,7 @@ bp = Blueprint('test', __name__, url_prefix='/test')
 sessions = dict()
 users = {"123": "abc", "abc": "456"}
 
+
 @bp.route('/hello')
 def hello_world():
     return 'hello world'
