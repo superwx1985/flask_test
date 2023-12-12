@@ -14,3 +14,4 @@ build/
 *.egg-info/
 /venv/
 /.idea/
+/api_test/temp_file/

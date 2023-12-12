@@ -24,7 +24,7 @@ def login():
         sessions[token] = userid
         return {"token": token}
     else:
-        return abort(403)
+        return abort(401)
 
 
 @app.route('/username', methods=["GET", "POST"])
@@ -34,10 +34,10 @@ def name():
 
         return {"reason": "name has been change"}, 201
     else:
-        return abort(403)
+        return abort(401)
 
 
 if __name__ == '__main__':
-    with app.test_request_context():
-        print(url_for('profile', username='John Doe', a=2))
+    # with app.test_request_context():
+    #     print(url_for('profile', username='John Doe', a=2))
     app.run(port=5000)
