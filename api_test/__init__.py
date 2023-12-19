@@ -13,6 +13,9 @@ def create_app():
     from api_test import test
     app.register_blueprint(test.bp)
 
+    app.config['UPLOAD_FOLDER'] = 'temp_file'
+    app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
     return app
 
 

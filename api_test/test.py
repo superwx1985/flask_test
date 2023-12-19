@@ -1,7 +1,7 @@
 import os.path
 import uuid
 
-from flask import Flask, url_for, request, Blueprint, abort, flash, redirect
+from flask import Flask, url_for, request, Blueprint, abort, flash, redirect, send_from_directory, current_app, session
 from werkzeug.utils import secure_filename
 
 bp = Blueprint('test', __name__, url_prefix='/test')
@@ -33,7 +33,7 @@ def login():
 
 
 @bp.route('/username', methods=["GET", "POST"])
-def name():
+def username():
     token = request.args.get('access_token')
     if token in sessions:
         return {"reason": "name has been change"}, 201
@@ -41,19 +41,22 @@ def name():
         return abort(401)
 
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+def get_userid(_request):
+    token = _request.args.get('access_token')
+    if token not in sessions:
+        return abort(401)
+    else:
+        return sessions[token]
+
+
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 
 @bp.route('/file_upload', methods=['GET', 'POST'])
 def file_upload():
-    token = request.args.get('access_token')
-    if token not in sessions:
-        return abort(401)
-    else:
-        userid = sessions[token]
+    userid = get_userid(request)
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -65,10 +68,11 @@ def file_upload():
             return {"reason": "No selected file"}, 400
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_dir = os.path.join("temp_file", userid)
+            file_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], userid)
             os.makedirs(file_dir) if not os.path.exists(file_dir) else True
             file.save(os.path.join(file_dir, filename))
             return {"reason": f"{filename} has been uploaded"}, 201
+            # return redirect(url_for('test.download_file', name=filename))
     return '''
         <!doctype html>
         <title>Upload new File</title>
@@ -78,6 +82,12 @@ def file_upload():
           <input type=submit value=Upload>
         </form>
         '''
+
+
+@bp.route('/uploads/<name>')
+def download_file(name):
+    userid = session.get('user_id', None)
+    return send_from_directory(os.path.join(current_app.config['UPLOAD_FOLDER'], userid), name)
 
 
 if __name__ == '__main__':

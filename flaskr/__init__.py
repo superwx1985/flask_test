@@ -38,4 +38,10 @@ def create_app(test_config=None):
     app.register_blueprint(blog.bp)
     app.add_url_rule('/', endpoint='index')
 
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'upload_files')
+    app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    from . import file
+    app.register_blueprint(file.bp)
+
     return app
+
