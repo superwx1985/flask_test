@@ -43,5 +43,8 @@ def create_app(test_config=None):
     from . import file
     app.register_blueprint(file.bp)
 
+    from . import api
+    app.register_blueprint(api.bp)
+
     return app
 

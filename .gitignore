@@ -15,3 +15,4 @@ build/
 /venv/
 /.idea/
 /api_test/temp_file/
+/flaskr/upload_files/10/
